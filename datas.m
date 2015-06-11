@@ -50,7 +50,7 @@ if length(plott)==1 && plott==1,
         vol_water = 30*72/(140^2);
         k_T_water = [water(:,1) (1./vol_water).*log(103./(103-cum_water(:,2)))];
         for k=1:length(k_T_water), if isinf(k_T_water(k,2)), k_T_water(k,:)=nan; k=k-1; end, end
-        h = area(k_T_water(:,1),k_T_water(:,2));
+        h = area(k_T_water(:,1),k_T_water(:,2),'HandleVisibility','off');
         set(h,'FaceColor',[0.9 0.95 1],'EdgeColor',[0.9 0.95 1]);
     end
     
@@ -59,13 +59,14 @@ for i=1:length(S)
     if plott(i)==1, 
         plot(T(:,i),k_T(:,i),'.','color',color(i,:));
         plot(T(:,i),k_T(:,i),':','color',color(i,:),'HandleVisibility','off');
-        %legend_entry{i} = sprintf('%d',S(i));
+        legendInfo{i} = num2str(S(i));
     end
 end
 
 xlabel('Temperature [C]')
 ylabel('Ice Nucleation')
-%legend(S,legend_entry)
+legend(legendInfo)
+break;
 
 
 % Graphiques de correlation entre l'experience et les infos
