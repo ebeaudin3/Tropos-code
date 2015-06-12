@@ -62,13 +62,14 @@ if graph_corr==1
                 x(s) = info_num(find(info_num(:,1)==numS(s)),i);
             
                 switch month(s)
+                    case 1, shape='*';
                     case 10, shape='o';
                     case 11, shape='d';
                     case 12, shape='+';
                 end
                 switch source(s)
                     case 1, colorb='b';
-                    case 2, colorb='y';
+                    case 2, colorb='m';
                     case 3, colorb='r';
                     case 4, colorb='g';
                 end
