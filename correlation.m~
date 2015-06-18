@@ -1,10 +1,10 @@
-function correlation(numSamples,temp,graph_corr)
+%function correlation(numSamples,temp,graph_corr)
 
-%numSamples = [1 -365 -366];%[217 218 216];
-%datasSamples = xlsread('datas_lab_IN.xlsx');
-%[info_num, info_text, info_all] = xlsread('PANGAEA-longterm.xlsx');
-%temp = [-8 -12 -16 -20];
-%graph_corr=1;
+numSamples = [1 -365 -366];%[217 218 216];
+datasSamples = xlsread('datas_lab_IN.xlsx');
+[info_num, info_text, info_all] = xlsread('PANGAEA-longterm.xlsx');
+temp = [-8 -12 -16 -20];
+graph_corr=1;
 
 [info_num, info_text, info_all] = xlsread('PANGAEA-longterm.xlsx');
 datasSamples = xlsread('datas_lab_IN.xlsx');
@@ -35,7 +35,7 @@ k_T_temp = nan(length(numS),length(temp));
 for t=1:length(temp)
     for s=1:length(numS)
         A = find(T(:,s)==temp(t)); if length(A)>1, A=A(1); end
-        if isempty(A), k_T_temp(s,t)=max(k_T(:,s));
+        if isempty(A), k_T_temp(s,t)=max(k_T(s,:));
         else k_T_temp(s,t) = k_T(A,s);
         end
     end

@@ -1,4 +1,4 @@
-function [k_T, numS, T, source, month] = cumulative_spectrum(numSamples,datasSamples,info_num,graph_cum)
+function [k_T, numS, T, source] = cumulative_spectrum(numSamples,datasSamples,info_num,graph_cum)
 
 %numSamples = [1 -365 -366];%[217 218 216];
 %datasSamples = xlsread('datas_lab_IN.xlsx');
@@ -31,7 +31,6 @@ for s=1:L
     nb_frz(:,s) = datasSamples(3:end,col(2));
     cum_frz(:,s) = cumsum(nb_frz(:,s));
     source(:,s) = datasSamples(4,col(1)+2);
-    month(:,s) = datasSamples(3,col(1)+2);
     
     volume = (info_num(find(info_num(:,1)==numS(s)),10)) / 140^2;
     nb_unfrz = 103-cum_frz(:,find(numS==numS(s)));
