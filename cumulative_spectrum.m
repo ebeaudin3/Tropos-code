@@ -1,6 +1,6 @@
-function [k_T, numS, T, source] = cumulative_spectrum(numSamples,datasSamples,info_num,graph_cum)
+function [k_T, numS, T] = cumulative_spectrum(numSamples,datasSamples,info_num,graph_cum)
 
-%numSamples = [1 -365 -366];%[217 218 216];
+%numSamples = [1];%[217 218 216];
 %datasSamples = xlsread('datas_lab_IN.xlsx');
 %[info_num, info_text, info_all] = xlsread('PANGAEA-longterm.xlsx');
 %graph_cum=1;
@@ -30,7 +30,6 @@ for s=1:L
     T(:,s) = datasSamples(3:end,col(1));
     nb_frz(:,s) = datasSamples(3:end,col(2));
     cum_frz(:,s) = cumsum(nb_frz(:,s));
-    source(:,s) = datasSamples(4,col(1)+2);
     
     volume = (info_num(find(info_num(:,1)==numS(s)),10)) / 140^2;
     nb_unfrz = 103-cum_frz(:,find(numS==numS(s)));
@@ -62,7 +61,19 @@ if graph_cum==1
 % Graph variables
 if length(graph_cum)==1
     graph_cum=ones(1,L);
-    color = hsv(L);
+    %color = hsv(L);
+    
+    filter_infos = xlsread('infos_filtres.xlsx');
+    colorb = [
+        135, 206, 250;
+        255, 255, 254;
+        250, 235, 215;
+        245, 222, 179;
+        210, 180, 140;
+        205, 133, 63;
+        153, 76, 0;
+        122, 51, 0;
+          ]/255;
 end
 
 % Plot water
@@ -74,8 +85,10 @@ set(h,'FaceColor',[0.9 0.95 1],'EdgeColor',[0.9 0.95 1]);
 for i=1:length(numS)
     hold on
     if graph_cum(i)==1,
-        plot(T(:,i),k_T(:,i),'.','color',color(i,:));
-        plot(T(:,i),k_T(:,i),':','color',color(i,:),'HandleVisibility','off');
+        teinte = filter_infos(find(filter_infos(:,1)==numS(i)),2);
+        color = colorb(teinte-1,:);
+        plot(T(:,i),k_T(:,i),'.','color',color);
+        plot(T(:,i),k_T(:,i),':','color',color,'HandleVisibility','off');
         legendInfo{i} = num2str(numS(i));
     end
 end

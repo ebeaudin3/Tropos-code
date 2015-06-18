@@ -11,8 +11,8 @@ datasSamples = xlsread('datas_lab_IN.xlsx');
 
 %% Initializating variables
 
-graph_cum=0;
-[k_T, numS, T, source] = cumulative_spectrum(numSamples,datasSamples,info_num,graph_cum);
+graph_cum=1;
+[k_T, numS, T] = cumulative_spectrum(numSamples,datasSamples,info_num,graph_cum);
 
 if length(temp)>6, error('Length of "temp" vector should not exceed 6. If you insist, then enter the function and fix this.');
 else
@@ -77,7 +77,8 @@ if graph_corr==1
                 %    case 11, shape='d';
                 %    case 12, shape='+';
                 %end
-                color(s,:) = colorb(filter_infos(find(filter_infos(:,1)==numS(s)),2)-1,:);
+                teinte = filter_infos(find(filter_infos(:,1)==numS(s)),2);
+                color(s,:) = colorb(teinte-1,:);
                     
                 %switch source(s)
                 %    case 1, colorb='b';
@@ -86,10 +87,11 @@ if graph_corr==1
                 %    case 4, colorb='g';
                 %end
             
+                %if teinte<6,
                 hold on
                 subplot(a,b,t)
                 plot(x(s),y(s),'.','color',color(s,:),'linewidth',1.5)
-                
+                %end
             end
             
             % plot
