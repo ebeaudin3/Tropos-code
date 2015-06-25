@@ -49,7 +49,7 @@ if graph_corr==1
     % Marine: blue  Desert: yellow  Europe: red     America: green
         
     filter_infos = xlsread('infos_filtres.xlsx');
-    colorb = [
+    color_filtre = [
         135, 206, 250;
         255, 255, 254;
         250, 235, 215;
@@ -69,16 +69,12 @@ if graph_corr==1
             for s=1:length(numS)
                 z(s) = numS(s);
                 y(s) = k_T_temp(s,t);
-                x(s) = info_num(find(info_num(:,1)==numS(s)),i);
+                    if isnan(y(s)), y(s)=max(numS); end
+                x(s) = info_num(find(info_num(:,1)==floor(numS(s))),i);
+                    if isnan(x(s)), x(s)=max(info_num(s,i)); end
             
-                %switch month(s)
-                %    case 1, shape='*';
-                %    case 10, shape='o';
-                %    case 11, shape='d';
-                %    case 12, shape='+';
-                %end
-                teinte = filter_infos(find(filter_infos(:,1)==numS(s)),2);
-                color(s,:) = colorb(teinte-1,:);
+                teinte = filter_infos(find(filter_infos(:,1)==floor(numS(s))),2);
+                color(s,:) = color_filtre(teinte-1,:);
                     
                 %switch source(s)
                 %    case 1, colorb='b';
@@ -104,8 +100,10 @@ if graph_corr==1
             [p, res, mu] = polyfit(x,y,1);
             sumres(t,i) = res.normr;
             
+            %[sum(isnan(p)), sum(isnan(x)), sum(isnan(y))]
+            
             x_fit = min(x):0.001:max(x);
-            hold on
+            %hold on
             %plot(x_fit,p(1).*x_fit+p(2),':r')
             %r(t,i) = corrcoef(x,y);
             
