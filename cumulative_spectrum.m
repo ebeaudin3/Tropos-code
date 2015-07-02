@@ -92,6 +92,7 @@ for i=1:length(numS)
         end
         teinte = filter_infos(find(filter_infos(:,1)==floor(numS(i))),2);
         color = colorb(teinte-1,:);
+        if numS(i) >358 && numS(i)<368, color=[0 1 0]; end
         plot(T(:,i),k_T(:,i),'.','color',color);
         plot(T(:,i),k_T(:,i),':','color',color,'HandleVisibility','off');
         legendInfo{i} = num2str(numS(i));

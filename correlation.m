@@ -75,7 +75,8 @@ if graph_corr==1
             
                 teinte = filter_infos(find(filter_infos(:,1)==floor(numS(s))),2);
                 color(s,:) = color_filtre(teinte-1,:);
-                    
+                if numS(s) >358 && numS(s)<368, color(s,:)=[0 1 0]; end
+            
                 %switch source(s)
                 %    case 1, colorb='b';
                 %    case 2, colorb='m';
