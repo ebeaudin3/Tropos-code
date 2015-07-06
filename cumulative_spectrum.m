@@ -87,11 +87,14 @@ for i=1:length(numS)
     hold on
     if graph_cum(i)==1,
         if isempty(find(filter_infos(:,1)==floor(numS(i)))),
-            error('L''echantillon %d n''a pas de couleur associee.',numS(i));
+            warning('L''echantillon %d n''a pas de couleur associee.',numS(i));
             color = [0 0 0];
         end
         teinte = filter_infos(find(filter_infos(:,1)==floor(numS(i))),2);
         color = colorb(teinte-1,:);
+        if numS(i) >358 && numS(i)<368, color=[1 0 0]; 
+        else color=[0 0 0];
+        end
         if numS(i) >358 && numS(i)<368, color=[0 1 0]; end
         plot(T(:,i),k_T(:,i),'.','color',color);
         plot(T(:,i),k_T(:,i),':','color',color,'HandleVisibility','off');
