@@ -98,12 +98,12 @@ for i=1:length(numS)
         if numS(i) >358 && numS(i)<368, color=[0 1 0]; end
         plot(T(:,i),k_T(:,i),'.','color',color);
         plot(T(:,i),k_T(:,i),':','color',color,'HandleVisibility','off');
-        legendInfo{i} = num2str(numS(i));
+        %legendInfo{i} = num2str(numS(i));
     end
 end
 
 % Graph settings
 xlabel('Temperature [^{o}C]')
 ylabel('Cumulative spectrum')
-legend(legendInfo)
+%legend(legendInfo)
 end
