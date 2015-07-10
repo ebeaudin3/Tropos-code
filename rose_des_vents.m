@@ -47,7 +47,8 @@ for i=1:8
      if sum(double(cell2mat(infos_all(l,4)))) == directions(i)
          sum_dir(i)=sum_dir(i) + 1;
          ind = find(numS==cell2mat(infos_all(l,1)));
-         sum_kT(i) = sum_kT(i) + x(t,ind);
+         if isempty(ind), break; end
+         sum_kT(i) = sum_kT(i) + x(t,ind)
      end
     end
 end

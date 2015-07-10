@@ -1,4 +1,4 @@
-function correlation(numSamples,temp,graph_corr)
+function valeurs = correlation(numSamples,temp,graph_corr)
 
 %numSamples = [1 -365 -366];%[217 218 216];
 %datasSamples = xlsread('datas_lab_IN.xlsx');
@@ -62,7 +62,7 @@ if graph_corr==1
     
     % Plot K_T_temp against infos
     
-    for i=1:length(info_num(1,:))
+    for i=1:27%length(info_num(1,:))
         x=0; y=0; z=0;
         figure
         for t=1:length(temp)
@@ -75,22 +75,17 @@ if graph_corr==1
             
                 teinte = filter_infos(find(filter_infos(:,1)==floor(numS(s))),2);
                 color(s,:) = color_filtre(teinte-1,:);
-                if numS(s) >358 && numS(s)<368, color(s,:)=[1 0 0]; 
-                else color(s,:)=[0 0 0];
-                end
-            
-                %switch source(s)
-                %    case 1, colorb='b';
-                %    case 2, colorb='m';
-                %    case 3, colorb='r';
-                %    case 4, colorb='g';
+                %if numS(s) >358 && numS(s)<368, color(s,:)=[1 0 0]; 
+                %else color(s,:)=[0 0 0];
                 %end
             
                 %if teinte<6,
                 hold on
                 subplot(a,b,t)
-                plot(x(s),y(s),'.','color',color(s,:),'linewidth',1.5)
+                semilogy(x(s),y(s),'.','color',color(s,:),'linewidth',1.5)
                 %end
+                
+                valeurs(s,:) = [z(s) x(s) y(s)];
             end
             
             % plot
