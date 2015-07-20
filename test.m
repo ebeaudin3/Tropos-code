@@ -6,4 +6,4 @@ temp = [-8 -12 -16 -20];
 graph_corr=1;
 
 valeurs = correlation(numSamples,temp,graph_corr);
-
+% Notes : valeurs = [nb_sample x y]

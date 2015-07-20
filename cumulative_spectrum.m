@@ -22,6 +22,7 @@ T = nan(length(datasSamples(:,1))-2,L);
 nb_frz = nan(length(datasSamples(:,1))-2,L);
 cum_frz = nan(length(datasSamples(:,1))-2,L);
 k_T = nan(length(datasSamples(:,1))-2,L);
+[filter_infos_num filter_infos_txt filter_infos_all] = xlsread('infos_filtres.xlsx');
 
 
 %% Affecting values to the variables
@@ -92,12 +93,17 @@ for i=1:length(numS)
         end
         teinte = filter_infos(find(filter_infos(:,1)==floor(numS(i))),2);
         color = colorb(teinte-1,:);
+        
+        % Color depending on the source (marine, desert or terrestrial)
+        source = filter_infos_txt(find(filter_infos_num(:,1)==floor(numS(i)))+1,3);
+        color = color_source(source);
+
         %if numS(i) >358 && numS(i)<368, color=[1 0 0]; 
         %else color=[0 0 0];
         %end
         
         
-        plot(T(:,i),k_T(:,i),'.','color',color);
+        plot(T(:,i),k_T(:,i),'o','color',color,'linewidth',3);
         plot(T(:,i),k_T(:,i),':','color',color,'HandleVisibility','off');
         %legendInfo{i} = num2str(numS(i));
     end

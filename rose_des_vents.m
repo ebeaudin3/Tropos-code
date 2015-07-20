@@ -41,14 +41,14 @@ directions = [69 147 78 157 79 162 83 152];
 angle = [0 pi/4 pi/2 3*pi/4 pi 5*pi/4 3*pi/2 7*pi/4];
 sum_dir=zeros(1,length(directions));
 sum_kT = zeros(1,length(directions));
-t=1;
+t=3;
 for i=1:8
     for l=1:length(infos_txt)
      if sum(double(cell2mat(infos_all(l,4)))) == directions(i)
          sum_dir(i)=sum_dir(i) + 1;
          ind = find(numS==cell2mat(infos_all(l,1)));
          if isempty(ind), break; end
-         sum_kT(i) = sum_kT(i) + x(t,ind)
+         sum_kT(i) = sum_kT(i) + x(t,ind);
      end
     end
 end
