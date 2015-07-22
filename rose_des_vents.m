@@ -9,6 +9,8 @@ datasSamples = xlsread('datas_lab_IN.xlsx');
 [info_num, info_text, info_all] = xlsread('PANGAEA-longterm.xlsx');
 graph_cum=0;
 [k_T, numS, T] = cumulative_spectrum(numSamples,datasSamples,info_num,graph_cum);
+PANGAEA = xlsread('PANGAEA-longterm.xlsx');
+for s=1:length(numS), month(s) = PANGAEA(find(PANGAEA(:,1)==floor(numS(s))),3); end
 [infos_num infos_txt infos_all]= xlsread('infos_filtres.xlsx'); %#ok
 
 % Directions of the wind are put into numerical values
@@ -18,7 +20,7 @@ O = double('O'); OSO = sum(double('OSO')); SO = sum(double('SO')); SSO = sum(dou
 S = double('S'); SSE = sum(double('SSE')); SE = sum(double('SE')); ESE = sum(double('ESE'));
 
 wind_dir = [E ENE NE NNE N NNO NO ONO O OSO SO SSO S SSE SE ESE];
-angle = 0:(pi/8):15*pi/8;
+angle = 0:(360/16):359;
 sum_kT = zeros(1,length(wind_dir));
 
 % x = k_T for the temperatures selected, for the samples selected
@@ -66,8 +68,9 @@ for t=1:length(temperature)
         a=b+1;
     end
     
-    subplot(2,2,t)
-    rose(theta)
+    %subplot(2,2,t)
+    figure
+    wind_rose(theta,ones(length(theta)))
     title(sprintf('Temperature %d^oC',temperature(t)))
     
 end
