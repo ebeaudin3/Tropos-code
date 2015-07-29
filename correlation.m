@@ -1,4 +1,4 @@
-function valeurs = correlation(numSamples,temp,graph_corr)
+function correlation(numSamples,temp,graph_corr,type)
 
 %numSamples = [1];%[217 218 216];
 %datasSamples = xlsread('datas_lab_IN.xlsx');
@@ -6,24 +6,19 @@ function valeurs = correlation(numSamples,temp,graph_corr)
 %temp = [-8 -12 -16 -20];
 %graph_corr=1;
 
-[info_num, info_text, info_all] = xlsread('PANGAEA-longterm.xlsx');
+[infos_num, infos_text, infos_all] = xlsread('PANGAEA-longterm.xlsx');
 datasSamples = xlsread('datas_lab_IN.xlsx');
+[filter_infos_num filter_infos_txt filter_infos_all] = xlsread('infos_filtres.xlsx'); %#ok
+
 
 %% Initializating variables
 
-graph_cum=1;
-[k_T, numS, T] = cumulative_spectrum(numSamples,datasSamples,info_num,graph_cum);
+graph_cum=0;
+[k_T, numS, T] = cumulative_spectrum(numSamples,datasSamples,infos_num,graph_cum,type);
 
+% Subplots position
 if length(temp)>6, error('Length of "temp" vector should not exceed 6. If you insist, then enter the function and fix this.');
-else
-    switch length(temp)
-        case 1, a=1; b=1;
-        case 2, a=1; b=2;
-        case 3, a=1; b=3;
-        case 4, a=2; b=2;
-        case 5, a=2; b=3;
-        case 6, a=2; b=3;
-    end
+else a = [1 1; 1 2; 1 3; 2 2; 2 3; 2 3]; dim = [a(length(temp),1) a(length(temp),2)];
 end
 
 nb_IN = nan(length(numS),length(temp));
@@ -41,76 +36,52 @@ for t=1:length(temp)
     end
 end
 
+
 %% Graphics
 if graph_corr==1
-     
-% Color and shape for each category:
-% Winter: *     Spring: d    Summer: o   Automn: s
-% Marine: blue  Desert: yellow  Europe: red     America: green
-
-[filter_infos_num filter_infos_txt filter_infos_all] = xlsread('infos_filtres.xlsx');
-color_filtre = [
-    135, 206, 250;
-    255, 255, 254;
-    250, 235, 215;
-    245, 222, 179;
-    210, 180, 140;
-    205, 133, 63;
-    153, 76, 0;
-    122, 51, 0;
-    ]/255;
-
-% Plot K_T_temp against infos
-
-for i=1:25%length(info_num(1,:))
-    figure
-    x=0; y=0; z=0;
-    
-    for t=1:length(temp)
-        for s=1:length(numS)
-            z(s) = numS(s);
-            y(s) = k_T_temp(s,t);
-            if isnan(y(s)), y(s)=max(numS); end
-            x(s) = info_num(find(info_num(:,1)==floor(numS(s))),i);
-            if isnan(x(s)), x(s)=max(info_num(s,i)); end
-            
-            teinte = filter_infos_num(find(filter_infos_num(:,1)==floor(numS(s))),2);
-            Color_f(s,:) = color_filtre(teinte-1,:);
-            %if numS(s) >358 && numS(s)<368, color(s,:)=[1 0 0];
-            %else color(s,:)=[0 0 0];
-            %end
-            
-            % Color depending on the source (marine, desert or terrestrial)
-            source(s) = filter_infos_txt(find(filter_infos_num(:,1)==floor(numS(s)))+1,3);
-            Color_f(s,:) = color_source(source(s));
-
+    for i=1:25%length(info_num(1,:))
+        figure
+        x=0; y=0; z=0;
+        
+        for t=1:length(temp)
+            for s=1:length(numS)
+                % Variables
+                z = numS(s);
+                y = k_T_temp(s,t);
+                    if isnan(y), y=max(numS); end
+                x = infos_num(find(infos_num(:,1)==floor(numS(s))),i);
+                    if isnan(x), x=max(infos_num(s,i)); end                
+                valeurs(s,:,i) = [z x y];
+                
+                % Color
+                Color_f = color_data(numS(s),type,filter_infos_num,filter_infos_txt,infos_num);
+                
+                % Plot
                 hold on
-                subplot(a,b,t)
-                plot(x(s),y(s),'.','color',Color_f(s,:),'linewidth',1.5)
-                
-                
-                valeurs(s,:,i) = [z(s) x(s) y(s)];
-                
-                
-                % plot
-                title(sprintf('Temperature %d',temp(t)))
-                ylabel('K_T')
-                xlabel(info_text(1,i))
+                subplot(dim(1),dim(2),t)
+                plot(x,y,'o','color',Color_f,'linewidth',2)
+                plot(x,y,'.','color',Color_f,'linewidth',1)
+                %title(sprintf('Temperature %d',temp(t)))
+                %ylabel('K_T')
+                xlabel(infos_text(1,i))
                 %xlim([min(x) max(x)])
-                ylim([0 100])
-            
-            
-            % Curve fitting
-            %[p, res, mu] = polyfit(x,y,1);
-            %sumres(t,i) = res.normr;
-            
-            %[sum(isnan(p)), sum(isnan(x)), sum(isnan(y))]
-            
-            %x_fit = min(x):0.001:max(x);
-            %hold on
-            %plot(x_fit,p(1).*x_fit+p(2),':r')
-            %r(t,i) = corrcoef(x,y);
-            
+                switch t
+                    case 1, ylim([0 10])
+                    case 2, ylim([0 50])
+                    case 3, ylim([0 100])
+                    case 4, ylim([0 150])
+                end
+                
+                
+                % Curve fitting
+                %[p, res, mu] = polyfit(x,y,1);
+                %sumres(t,i) = res.normr;
+                %[sum(isnan(p)), sum(isnan(x)), sum(isnan(y))]
+                %x_fit = min(x):0.001:max(x);
+                %plot(x_fit,p(1).*x_fit+p(2),':r')
+                %r(t,i) = corrcoef(x,y);
+                hold off
+            end
         end
     end
 end
