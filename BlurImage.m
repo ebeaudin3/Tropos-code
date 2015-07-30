@@ -5,7 +5,7 @@ function I_blurred = BlurImage(file)
 %clear;
 
 I = imread(file);
-scale = 1/20;
+scale = 1/7;
 %imshow(I)
 I = imresize(I,scale);
 Im2blur = I(:,:,2);
@@ -23,8 +23,9 @@ filter_cornerTL = (1/4)*[4 2; 2 1];%[1 1; 1 1]; %
 filter_cornerBR = (1/4)*[1 2; 2 4];%[1 1; 1 1]; %
 filter_cornerBL = (1/4)*[2 1; 4 2];%[1 1; 1 1]; %
 
+size(Im2blur)
+
 for i=1:size(Im2blur,1)
-    i
     for j=1:size(Im2blur,2)
         filter = 0; pix=0;
         %corner
@@ -57,8 +58,8 @@ for i=1:size(Im2blur,1)
     end
 end
 
-%figure
-%imshow(I_blurred*0.01)
+figure
+imshow(I_blurred)
 
 
 
