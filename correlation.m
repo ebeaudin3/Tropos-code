@@ -6,14 +6,14 @@ function correlation(numSamples,temp,graph_corr,type)
 %temp = [-8 -12 -16 -20];
 %graph_corr=1;
 
-[infos_num, infos_text, infos_all] = xlsread('PANGAEA-longterm.xlsx');
+[infos_num, infos_text, infos_all] = xlsread('PANGAEA-longterm.xlsx'); %#ok
 datasSamples = xlsread('datas_lab_IN.xlsx');
 [filter_infos_num filter_infos_txt filter_infos_all] = xlsread('infos_filtres.xlsx'); %#ok
 
 
 %% Initializating variables
 
-graph_cum=0;
+graph_cum=1;
 [k_T, numS, T] = cumulative_spectrum(numSamples,datasSamples,infos_num,graph_cum,type);
 
 % Subplots position
@@ -21,7 +21,6 @@ if length(temp)>6, error('Length of "temp" vector should not exceed 6. If you in
 else a = [1 1; 1 2; 1 3; 2 2; 2 3; 2 3]; dim = [a(length(temp),1) a(length(temp),2)];
 end
 
-nb_IN = nan(length(numS),length(temp));
 k_T_temp = nan(length(numS),length(temp));
 
 
@@ -39,28 +38,28 @@ end
 
 %% Graphics
 if graph_corr==1
-    for i=1:25%length(info_num(1,:))
+    for i=1:25%length(info_num(1,:)) %until 25, because we don't care about the rest
         figure
-        x=0; y=0; z=0;
+        x=0; y=0; z=0; %#ok
         
         for t=1:length(temp)
             for s=1:length(numS)
                 % Variables
-                z = numS(s);
                 y = k_T_temp(s,t);
                     if isnan(y), y=max(numS); end
-                x = infos_num(find(infos_num(:,1)==floor(numS(s))),i);
-                    if isnan(x), x=max(infos_num(s,i)); end                
+                x = infos_num(find(infos_num(:,1)==floor(numS(s))),i); %#ok
+                    if isnan(x), x=max(infos_num(s,i)); end
+                z = numS(s); %if you want to make a 3D graph
                 valeurs(s,:,i) = [z x y];
                 
                 % Color
                 Color_f = color_data(numS(s),type,filter_infos_num,filter_infos_txt,infos_num);
                 
-                % Plot
+                % Plot                
                 hold on
                 subplot(dim(1),dim(2),t)
-                plot(x,y,'o','color',Color_f,'linewidth',2)
-                plot(x,y,'.','color',Color_f,'linewidth',1)
+                plot(x,y,'*','color',Color_f,'linewidth',1.2)
+                %plot(x,y,'.','color',Color_f,'linewidth',1)
                 %title(sprintf('Temperature %d',temp(t)))
                 %ylabel('K_T')
                 xlabel(infos_text(1,i))

@@ -1,10 +1,11 @@
 % Water sample
 clear;
-[data_num data_txt data_all] = xlsread('Water_Sample.xlsx');
+[data_num data_txt data_all] = xlsread('Water_Sample.xlsx'); %#ok
 
 t = -(1:27)';
 volume = 0.1; %100?L=0.1cm^3
 
+%nb_unfrz = nan();
 for i=1:size(data_num,2)
     nb_unfrz(:,i) = max(cumsum(data_num(:,i)))-cumsum(data_num(:,i));
     k_T(:,i) = (1/volume).*log(max(cumsum(data_num(:,i)))./nb_unfrz(:,i));

@@ -2,7 +2,7 @@ function Color_f = color_data(numS,type,filter_infos_num,filter_infos_txt,infos_
 
 % Types
 % 1 source (marine, desert or terrestrial)
-% 2 season
+% 2 season (humid and dry)
 % 3 filter color
 % 4 PM10
 
@@ -23,10 +23,13 @@ switch type
         
     case 2 %season
         month = infos_num(find(infos_num(:,1)==floor(numS)),3);
-        if month==3 || month==4 || month==5, Color_f=[0 1 0]; %spring
-        elseif month==6 || month==7 || month==8, Color_f=[1 0 0];%Color_f=[154 205 50]/255; %summer
-        elseif month==9 || month==10 || month==11, Color_f=[1 0 0];%Color_f=[255 140 0]/255; %autumn
-        elseif month==12 || month==1 || month==2, Color_f=[0 1 0];%Color_f=[0 191 255]/255; %winter
+        %if month==3 || month==4 || month==5, Color_f=[0 1 0]; %spring
+        %elseif month==6 || month==7 || month==8, Color_f=[1 0 0];%Color_f=[154 205 50]/255; %summer
+        %elseif month==9 || month==10 || month==11, Color_f=[1 0 0];%Color_f=[255 140 0]/255; %autumn
+        %elseif month==12 || month==1 || month==2, Color_f=[0 1 0];%Color_f=[0 191 255]/255; %winter
+
+        if month>3 && month<11, Color_f=[1 0 0]; %dry
+        else Color_f=[0 0 1]; %humid
         end
         
         

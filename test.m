@@ -1,4 +1,4 @@
-% Correlation avec PANGAEA
+% Correlation with PANGAEA and cumulative spectrum (IN/m^3)
 
 clear;
 numSamples = 1; %[359:364 365.5 366.5 367];%[1 -365 -366];

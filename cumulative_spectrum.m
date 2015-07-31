@@ -17,19 +17,16 @@ if numSamples(1)>1 && sum(numSamples)>0, numS = numSamples; end
 L = length(numS);
 
 %% Initializating variables
-
 T = nan(length(datasSamples(:,1))-2,L);
 nb_frz = nan(length(datasSamples(:,1))-2,L);
 cum_frz = nan(length(datasSamples(:,1))-2,L);
 k_T = nan(length(datasSamples(:,1))-2,L);
-[filter_infos_num filter_infos_txt filter_infos_all] = xlsread('infos_filtres.xlsx');
-
+[filter_infos_num filter_infos_txt filter_infos_all] = xlsread('infos_filtres.xlsx'); %#ok
 
 %% Affecting values to the variables
 for s=1:length(numS)
-    col = [find(datasSamples(1,:)==numS(s)) find(datasSamples(1,:)==numS(s))+1];
-    T(:,s) = datasSamples(3:end,col(1));
-    nb_frz(:,s) = datasSamples(3:end,col(2));
+    T(:,s) = datasSamples(3:end,find(datasSamples(1,:)==numS(s))); %#ok
+    nb_frz(:,s) = datasSamples(3:end,find(datasSamples(1,:)==numS(s))+1);
     cum_frz(:,s) = cumsum(nb_frz(:,s));
     
     volume = (infos_num(find(infos_num(:,1)==floor(numS(s))),10)) / 140^2; %#ok
@@ -41,8 +38,7 @@ end
 k_T(isinf(k_T))=nan;
 k_T = real(k_T);
 
-% Variable water
-lines_water = abs(isnan([datasSamples(3:end,find(datasSamples(1,:)==0)) datasSamples(3:end,find(datasSamples(1,:)==0)+1)])-1); %#ok
+% Water
 datas_water = [datasSamples(3:end,find(datasSamples(1,:)==0)) datasSamples(3:end,find(datasSamples(1,:)==0)+1)]; r=1; %#ok
 
 for w=1:length(datas_water), if isnan(datas_water(w,1)), W(r)=w; r=r+1; end, end
@@ -59,13 +55,13 @@ end
 
 %% Graphic
 if graph_cum==1
-    % Plot water
+    % Plot water first
     h = area(T_water,k_T_water,'HandleVisibility','off');
     set(h,'FaceColor',[0.9 0.95 1],'EdgeColor',[0.9 0.95 1]);
     
     % Plot k_T vs T
         for i=1:length(numS)
-            i/length(numS)
+            %i/length(numS)
             hold on
             Color_f = color_data(numS(i),type,filter_infos_num,filter_infos_txt,infos_num);
             plot(T(:,i),k_T(:,i),'o','color',Color_f,'linewidth',2);

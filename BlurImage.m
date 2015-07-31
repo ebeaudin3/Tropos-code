@@ -2,10 +2,11 @@
 
 function I_blurred = BlurImage(file)
 
+%files = {'P1010494.JPG'};
 %clear;
-
+%I= imread(num2str(cell2mat(files)));
 I = imread(file);
-scale = 1/7;
+scale = 1/12;
 %imshow(I)
 I = imresize(I,scale);
 Im2blur = I(:,:,2);
