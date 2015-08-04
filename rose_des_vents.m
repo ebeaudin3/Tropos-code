@@ -1,16 +1,14 @@
 % ROSE DES VENTS
 % warning! the values on the graph are scaled by a factor of 100
 clear;
-scale = zeros(1,4);
 
 % Variables
-numSamples = [1];%[217 218 216];
+numSamples = 1;%[217 218 216];
 datasSamples = xlsread('datas_lab_IN.xlsx');
-[info_num, info_text, info_all] = xlsread('PANGAEA-longterm.xlsx');
-graph_cum=0;
-[k_T, numS, T] = cumulative_spectrum(numSamples,datasSamples,info_num,graph_cum);
-PANGAEA = xlsread('PANGAEA-longterm.xlsx');
-for s=1:length(numS), month(s) = PANGAEA(find(PANGAEA(:,1)==floor(numS(s))),3); end
+[PANGAEA_num, PANGAEA_text, PANGAEA_all] = xlsread('PANGAEA-longterm.xlsx');
+graph_cum=0; type=1;
+[k_T, numS, T] = cumulative_spectrum(numSamples,datasSamples,PANGAEA_num,graph_cum,type);
+for s=1:length(numS), month(s) = PANGAEA_num(find(PANGAEA_num(:,1)==floor(numS(s))),3); end %#ok
 [infos_num infos_txt infos_all]= xlsread('infos_filtres.xlsx'); %#ok
 
 % Directions of the wind are put into numerical values
@@ -35,9 +33,8 @@ for t=1:length(temperature)
     end
 end
 
-% rose wind for each temperature
-
-for t=1:length(temperature)
+% Rose wind for each temperature
+for t=1%:length(temperature)
     
     sum_dir=zeros(1,length(wind_dir));
     
