@@ -11,13 +11,13 @@ switch type
     case 1 %source
         source = filter_infos_txt(find(filter_infos_num(:,1)==floor(numS))+1,3);
         switch sum(double(char(source)))
-            case double('M'), Color_f = [0 0 255];
-            case sum(double('MT')), Color_f = [128 0 128];
-            case double('T'), Color_f = [255 0 0];
-            case sum(double('DT')), Color_f = [255 165 0];
-            case double('D'), Color_f = [255 215 0];
-            case sum(double('MD')), Color_f = [154 205 50];
-            case sum(double('MDT')), Color_f = [153 76 0];
+            case double('M'), Color_f = [0 0 255]; %blue
+            case sum(double('MT')), Color_f = [128 0 128]; %purple
+            case double('T'), Color_f = [255 0 0]; %red
+            case sum(double('DT')), Color_f = [255 165 0]; %orange
+            case double('D'), Color_f = [255 215 0]; %yellow
+            case sum(double('MD')), Color_f = [154 205 50]; %green
+            case sum(double('MDT')), Color_f = [153 76 0]; %brown
         end
         Color_f = Color_f./255;
         

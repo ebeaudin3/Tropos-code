@@ -1,8 +1,8 @@
-function [k_T, numS, T] = cumulative_spectrum(numSamples,datasSamples,infos_num,graph_cum,type)
+function [k_T, numS, T] = cumulative_spectrum(numSamples,datasSamples,PANGAEA_num,graph_cum,type)
 
 %numSamples = [1 -365 -366];%[217 218 216];
 %datasSamples = xlsread('datas_lab_IN.xlsx');
-%[info_num, info_text, info_all] = xlsread('PANGAEA-longterm.xlsx');
+%[PANGAEA_num, PANGAEA_text, PANGAEA_all] = xlsread('PANGAEA-longterm.xlsx');
 %graph_cum=1;
 
 %% Re-arranging the vector numSamples, if necessary
@@ -29,9 +29,9 @@ for s=1:length(numS)
     nb_frz(:,s) = datasSamples(3:end,find(datasSamples(1,:)==numS(s))+1);
     cum_frz(:,s) = cumsum(nb_frz(:,s));
     
-    volume = (infos_num(find(infos_num(:,1)==floor(numS(s))),10)) / 140^2; %#ok
+    volume(s) = (PANGAEA_num(find(PANGAEA_num(:,1)==floor(numS(s))),10)) / 140^2; %#ok
     nb_unfrz = 103-cum_frz(:,find(numS==numS(s))); %#ok
-    k_T(:,s) = (1./volume).*log(103./nb_unfrz);
+    k_T(:,s) = (1./volume(s)).*log(103./nb_unfrz);
 end
 
 % Remove "inf" and imaginary numbers
@@ -63,11 +63,19 @@ if graph_cum==1
         for i=1:length(numS)
             %i/length(numS)
             hold on
-            Color_f = color_data(numS(i),type,filter_infos_num,filter_infos_txt,infos_num);
+            Color_f = color_data(numS(i),type,filter_infos_num,filter_infos_txt,PANGAEA_num);
             plot(T(:,i),k_T(:,i),'o','color',Color_f,'linewidth',2);
             plot(T(:,i),k_T(:,i),'.','color',Color_f,'HandleVisibility','off');
             plot(T(:,i),k_T(:,i),':','color',Color_f,'HandleVisibility','off');
             %legendInfo{i} = num2str(numS(i));
+            % ERROR BARS
+            dx=0.5;
+            for j=1:length(T(:,i))
+                dy = sqrt(k_T(j,i)/volume(i)); if k_T(j,i)-dy<0, y_d=0; else y_d=k_T(j,i)-dy; end
+                plot([T(j,i)-dx T(j,i)+dx],[k_T(j,i) k_T(j,i)],'color',Color_f)
+                plot([T(j,i) T(j,i)],[y_d k_T(j,i)+dy],'color',Color_f)
+            end
+            hold off
         end
     
     % Graph settings
