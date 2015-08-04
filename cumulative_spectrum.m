@@ -9,7 +9,7 @@ function [k_T, numS, T] = cumulative_spectrum(numSamples,datasSamples,PANGAEA_nu
 if numSamples(1)==1, numS = nan(1,(length(datasSamples)+1)/3 -1); j=1;
     for k=1:3:length(datasSamples)-1, if datasSamples(1,k)>1, numS(j) = datasSamples(1,k); j=j+1; end; end
 end
-if sum(numSamples)<0, for k=2:length(numSamples), numS(find(numS==abs(numSamples(k))))=[]; end
+if sum(numSamples)<0, for k=2:length(numSamples), numS(find(numS==abs(numSamples(k))))=[]; end %#ok
 end
 
 if numSamples(1)>1 && sum(numSamples)>0, numS = numSamples; end

@@ -18,6 +18,7 @@ switch type
             case double('D'), Color_f = [255 215 0]; %yellow
             case sum(double('MD')), Color_f = [154 205 50]; %green
             case sum(double('MDT')), Color_f = [153 76 0]; %brown
+            case 0, warning('The sample %d has no source indicated!',numS), Color_f=[0 0 0];
         end
         Color_f = Color_f./255;
         
