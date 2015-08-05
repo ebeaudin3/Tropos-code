@@ -23,7 +23,7 @@ switch type
         Color_f = Color_f./255;
         
     case 2 %season
-        month = infos_num(find(infos_num(:,1)==floor(numS)),3);
+        month = infos_num(find(infos_num(:,1)==floor(numS)),3); %#ok
         %if month==3 || month==4 || month==5, Color_f=[0 1 0]; %spring
         %elseif month==6 || month==7 || month==8, Color_f=[1 0 0];%Color_f=[154 205 50]/255; %summer
         %elseif month==9 || month==10 || month==11, Color_f=[1 0 0];%Color_f=[255 140 0]/255; %autumn
