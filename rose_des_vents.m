@@ -1,24 +1,32 @@
 % ROSE DES VENTS
-% warning! the values on the graph are scaled by a factor of 100
 clear;
 
-% Variables
-numSamples = 1;%[217 218 216];
+%% INITIALIZATING VARIABLES
+numSamples = 1; %"1" means all. otherwise, write a vector such as [401 402 403];
 datasSamples = xlsread('datas_lab_IN.xlsx');
 [PANGAEA_num, PANGAEA_text, PANGAEA_all] = xlsread('PANGAEA-longterm.xlsx');
+[infos_num infos_txt infos_all]= xlsread('infos_filtres.xlsx'); %#ok
 graph_cum=0; type=1;
 [k_T, numS, T] = cumulative_spectrum(numSamples,datasSamples,PANGAEA_num,graph_cum,type);
-for s=1:length(numS), month(s) = PANGAEA_num(find(PANGAEA_num(:,1)==floor(numS(s))),3); end %#ok
-[infos_num infos_txt infos_all]= xlsread('infos_filtres.xlsx'); %#ok
+
+%now we have the k_T value, associated with the temperature (T).
+%let's extract the season and the wind direction for each sample.
+
+season_samples=nan(1,length(numS));
+for s=1:length(numS)
+    month(s) = PANGAEA_num(find(PANGAEA_num(:,1)==floor(numS(s))),3); %#ok
+    seasons = [12 1 2; 3 4 5; 6 7 8; 9 10 11]; %winter,spring,summer,autumn
+    [i,j]=find(seasons==month(s));
+    season_samples(s) = i;
+    wind_samples(s) = infos_txt(find(infos_num(:,1)==floor(numS(s))),4); %#ok
+end
 
 % Directions of the wind are put into numerical values
-E = double('E'); ENE = sum(double('ENE')); NE = sum(double('NE')); NNE = sum(double('NNE'));
-N = double('N'); NNO = sum(double('NNO')); NO = sum(double('NO')); ONO = sum(double('ONO'));
-O = double('O'); OSO = sum(double('OSO')); SO = sum(double('SO')); SSO = sum(double('SSO'));
-S = double('S'); SSE = sum(double('SSE')); SE = sum(double('SE')); ESE = sum(double('ESE'));
-
-wind_dir = [E ENE NE NNE N NNO NO ONO O OSO SO SSO S SSE SE ESE];
-angle = 0:(360/16):359;
+wind_dir = [rms(double('E')) rms(double('ENE')) rms(double('NE')) rms(double('NNE')) ...
+    rms(double('N')) rms(double('NNO')) rms(double('NO')) rms(double('ONO')) rms(double('O')) ...
+    rms(double('OSO')) rms(double('SO')) rms(double('SSO')) rms(double('S')) rms(double('SSE')) ...
+    rms(double('SE')) rms(double('ESE'))];
+angles = 0:(360/16):359;
 sum_kT = zeros(1,length(wind_dir));
 
 % x = k_T for the temperatures selected, for the samples selected
@@ -27,47 +35,41 @@ x = nan(length(temperature),length(numS));
 for t=1:length(temperature)
     for i=1:length(numS)
         ind = find(T(:,i)==temperature(t));
-        if isempty(k_T(ind,i)), ind=find(T(:,i)==min(T(:,i))); end
-        if isnan(k_T(ind,i)), k_T(ind,i) = k_T(ind-1,i); end
+        if isempty(k_T(ind,i)),ind=find(T(:,i)==min(T(:,i)))-1; end
+        while isnan(k_T(ind,i)), k_T(ind,i) = k_T(ind-1,i); end
         x(t,i) = k_T(ind,i);
     end
 end
 
-% Rose wind for each temperature
-for t=1%:length(temperature)
+% One rose wind per temperature, and one color per season
+for t=1:length(temperature)
+    figure, hold on
+    A = zeros(4,16); %4 seasons, 16 wind directions
+    nb = zeros(4,16);
     
-    sum_dir=zeros(1,length(wind_dir));
+    for i=1:length(numS)
+        %we look first to which category the i^th sample corresponds
+        ind_s = season_samples(i);
+        ind_w = find((rms(double(cell2mat(wind_samples(i)))))==wind_dir);
+        %and we put its k_t value in the correct box
+        A(ind_s,ind_w) = A(ind_s,ind_w)+x(t,i);
+        %we want to know how many sample are in each category
+        nb(ind_s,ind_w) = nb(ind_s,ind_w) +1;
+    end
     
-    for i=1:length(wind_dir)
-        for l=1:length(infos_txt)
-            if sum(double(cell2mat(infos_all(l,4)))) == wind_dir(i)
-                sum_dir(i)=sum_dir(i) + 1;
-                ind = find(numS==cell2mat(infos_all(l,1)));
-                if isempty(ind), break; end
-                % cumulative sum of k_T for each wind direction
-                sum_kT(i) = sum_kT(i) + x(t,ind);
+    scale=100; %scale factor needed not to lose precision. See further.
+    I=[]; D=[];
+    for j=1:length(wind_dir)
+        for k=1:max(season_samples)
+            if nb(k,j)>0,
+                qty = ones(1,round(scale*A(k,j)/nb(k,j)));
                 
+                I=[I k*qty]; %multypling by k gives the color (season), and the length of the added vector represents the intensity
+                D=[D angles(j)*qty];
             end
         end
     end
     
-    % vector theta replace sum_kT for the windrose graph
-    a=1;
-    b=0;
-    theta = nan(1,sum(round(sum_kT*100)));
-    
-    for j=1:length(wind_dir)
-        % theta is scale over the number of data
-        scale = 100;
-        nn = round(sum_kT(j)*scale/(sum_dir(j)+1));
-        b=b+nn;
-        theta(1,a:b) = ones(1,nn)*angle(j);
-        a=b+1;
-    end
-    
-    %subplot(2,2,t)
-    figure
-    wind_rose(theta,ones(length(theta)))
-    title(sprintf('Temperature %d^oC',temperature(t)))
+    wind_rose(D,I)
     
 end
