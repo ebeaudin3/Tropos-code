@@ -1,9 +1,11 @@
 function [k_T, numS, T] = cumulative_spectrum(numSamples,datasSamples,PANGAEA_num,graph_cum,type)
 
-%numSamples = [1 -365 -366];%[217 218 216];
+%clear;
+%numSamples = [465];%[1 -365 -366];%[217 218 216];
 %datasSamples = xlsread('datas_lab_IN.xlsx');
 %[PANGAEA_num, PANGAEA_text, PANGAEA_all] = xlsread('PANGAEA-longterm.xlsx');
 %graph_cum=1;
+print=0;
 
 %% Re-arranging the vector numSamples, if necessary
 if numSamples(1)==1, numS = nan(1,(length(datasSamples)+1)/3 -1); j=1;
@@ -30,8 +32,22 @@ for s=1:length(numS)
     cum_frz(:,s) = cumsum(nb_frz(:,s));
     
     volume(s) = (PANGAEA_num(find(PANGAEA_num(:,1)==floor(numS(s))),10)) / 140^2; %#ok
-    nb_unfrz = 103-cum_frz(:,find(numS==numS(s))); %#ok
-    k_T(:,s) = (1./volume(s)).*log(103./nb_unfrz);
+    nb_unfrz = max(cum_frz(:,s))-cum_frz(:,find(numS==numS(s))); %#ok
+    k_T(:,s) = (1./volume(s)).*log(max(cum_frz(:,s))./nb_unfrz);
+
+    
+     
+    if print==1
+        ind_nan=find(isnan(k_T(:,s)) | isinf(k_T(:,s)));
+        ind_end=min(ind_nan)-1;
+        dy(:,s) = sqrt(k_T(1:ind_end)./volume(s));
+     
+            fileID=fopen(sprintf('Sample %d',numS(s)),'w');
+            fprintf(fileID,'Sample %d\n',floor(numS(s)));
+            fprintf(fileID,'%s %12s %12s\n','T','k_T','dk_T');
+            fileDATA=[T(1:ind_end)'; k_T(1:ind_end)'; dy(:,s)'];
+            fprintf(fileID,'%d %12.2f %12.2f\n',fileDATA);
+    end
 end
 
 % Remove "inf" and imaginary numbers
@@ -60,26 +76,28 @@ if graph_cum==1
     set(h,'FaceColor',[0.9 0.95 1],'EdgeColor',[0.9 0.95 1]);
     
     % Plot k_T vs T
-        for i=1:length(numS)
-            %i/length(numS)
-            hold on
-            Color_f = color_data(numS(i),type,filter_infos_num,filter_infos_txt,PANGAEA_num);
-            plot(T(:,i),k_T(:,i),'o','color',Color_f,'linewidth',2);
-            plot(T(:,i),k_T(:,i),'.','color',Color_f,'HandleVisibility','off');
-            plot(T(:,i),k_T(:,i),':','color',Color_f,'HandleVisibility','off');
-            %legendInfo{i} = num2str(numS(i));
-            % ERROR BARS
-            dx=0.5;
-            for j=1:length(T(:,i))
-                dy = sqrt(k_T(j,i)/volume(i)); if k_T(j,i)-dy<0, y_d=0; else y_d=k_T(j,i)-dy; end
-                plot([T(j,i)-dx T(j,i)+dx],[k_T(j,i) k_T(j,i)],'color',Color_f)
-                plot([T(j,i) T(j,i)],[y_d k_T(j,i)+dy],'color',Color_f)
-            end
-            hold off
+    for i=1:length(numS)
+        %i/length(numS)
+        hold on
+        Color_f = color_data(numS(i),type,filter_infos_num,filter_infos_txt,PANGAEA_num);
+        plot(T(:,i),k_T(:,i),'o','color',Color_f,'linewidth',2);
+        plot(T(:,i),k_T(:,i),'.','color',Color_f,'HandleVisibility','off');
+        plot(T(:,i),k_T(:,i),':','color',Color_f,'HandleVisibility','off');
+        %legendInfo{i} = num2str(numS(i));
+        % ERROR BARS
+        dx=0.5;
+        for j=1:length(T(:,i))
+            dy = sqrt(k_T(j,i)/volume(i)); if k_T(j,i)-dy<0, y_d=0; else y_d=k_T(j,i)-dy; end
+            plot([T(j,i)-dx T(j,i)+dx],[k_T(j,i) k_T(j,i)],'color',Color_f)
+            plot([T(j,i) T(j,i)],[y_d k_T(j,i)+dy],'color',Color_f)
         end
+        hold off
+    end
     
     % Graph settings
     xlabel('Temperature [^{o}C]')
-    ylabel('Cumulative spectrum')
+    ylabel('Cumulative spectrum [IN/m^3]')
     %legend(legendInfo)
 end
+
+

@@ -13,12 +13,12 @@ graph_cum=0; type=1;
 %let's extract the season and the wind direction for each sample.
 
 season_samples=nan(1,length(numS));
+seasons = [12 1 2; 3 4 5; 6 7 8; 9 10 11]; %winter=1,spring=2,summer=3,autumn=4
 for s=1:length(numS)
     month(s) = PANGAEA_num(find(PANGAEA_num(:,1)==floor(numS(s))),3); %#ok
-    seasons = [12 1 2; 3 4 5; 6 7 8; 9 10 11]; %winter,spring,summer,autumn
     [i,j]=find(seasons==month(s));
     season_samples(s) = i;
-    wind_samples(s) = infos_txt(find(infos_num(:,1)==floor(numS(s))),4); %#ok
+    wind_samples(s) = infos_txt(find(infos_num(:,1)==floor(numS(s)))+1,4); %#ok
 end
 
 % Directions of the wind are put into numerical values
@@ -26,7 +26,7 @@ wind_dir = [rms(double('E')) rms(double('ENE')) rms(double('NE')) rms(double('NN
     rms(double('N')) rms(double('NNO')) rms(double('NO')) rms(double('ONO')) rms(double('O')) ...
     rms(double('OSO')) rms(double('SO')) rms(double('SSO')) rms(double('S')) rms(double('SSE')) ...
     rms(double('SE')) rms(double('ESE'))];
-angles = 0:(360/16):359;
+angles = 0:(360/length(wind_dir)):359;
 sum_kT = zeros(1,length(wind_dir));
 
 % x = k_T for the temperatures selected, for the samples selected
@@ -41,10 +41,10 @@ for t=1:length(temperature)
     end
 end
 
-% One rose wind per temperature, and one color per season
+% One wind rose per temperature, and one color per season
 for t=1:length(temperature)
     figure, hold on
-    A = zeros(4,16); %4 seasons, 16 wind directions
+    A = zeros(4,16); %sum_kT for 4 seasons, 16 wind directions
     nb = zeros(4,16);
     
     for i=1:length(numS)
@@ -53,7 +53,7 @@ for t=1:length(temperature)
         ind_w = find((rms(double(cell2mat(wind_samples(i)))))==wind_dir);
         %and we put its k_t value in the correct box
         A(ind_s,ind_w) = A(ind_s,ind_w)+x(t,i);
-        %we want to know how many sample are in each category
+        %we want to know how many samples are in each category
         nb(ind_s,ind_w) = nb(ind_s,ind_w) +1;
     end
     

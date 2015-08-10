@@ -1,21 +1,21 @@
-%function correlation(numSamples,temp,graph_corr,type)
+function correlation(numSamples,temp,graph_cum,graph_corr,plot_timeseries,type)
 
-clear;
-numSamples = [1];%[217 218 216];
-temp = [-8 -12 -16 -20];
-graph_corr=0;
-plot_timeseries=0;
-type=1;
+%clear;
+%numSamples = [465];%[217 218 216];
+%temp = [-12 -14 -16 -18];
+%graph_cum=0;
+%graph_corr=0;
+%plot_timeseries=1;
+%type=1;
 
-[PANGAEA_num, PANGAEA_text, PANGAEA_all] = xlsread('PANGAEA-longterm.xlsx');
-datasSamples = xlsread('datas_lab_IN.xlsx');
-[filter_infos_num filter_infos_txt filter_infos_all] = xlsread('infos_filtres.xlsx'); %#ok
+[PANGAEA_num, PANGAEA_text, PANGAEA_all] = xlsread('PANGAEA-longterm.xlsx'); %#ok
+dataSamples = xlsread('datas_lab_IN.xlsx');
+[filter_infos_num, filter_infos_txt, filter_infos_all] = xlsread('infos_filtres.xlsx'); %#ok
 
 
 %% Initializating variables
 
-graph_cum=0;
-[k_T, numS, T] = cumulative_spectrum(numSamples,datasSamples,PANGAEA_num,graph_cum,type);
+[k_T, numS, T] = cumulative_spectrum(numSamples,dataSamples,PANGAEA_num,graph_cum,type);
 
 % Subplots position
 if length(temp)>6, error('Length of "temp" vector should not exceed 6. If you insist, then enter the function and fix this.');
@@ -41,7 +41,6 @@ end
 
 for i=1:25%length(info_num(1,:)) %until 25, because we don't care about the rest
     if graph_corr==1, figure, end
-    x=0; y=0; z=0;
     
     for t=1:length(temp)
         x=0; y=0; z=0;
@@ -50,27 +49,32 @@ for i=1:25%length(info_num(1,:)) %until 25, because we don't care about the rest
             % Variables
             PANGAEA_numS = PANGAEA_num(find(PANGAEA_num(:,1)==floor(numS(s))),:); %#ok
             
-            x(s) = PANGAEA_numS(i); if isnan(x(s)), x(s)=max(PANGAEA_num(s,i)); end
+            x(s) = PANGAEA_numS(i);
             y(s) = k_T_temp(s,t); if isnan(y(s)), y(s)=max(k_T_temp(s,:)); end
-            z(s,1:3) = PANGAEA_numS(2:4);
+            z(s,1:3) = PANGAEA_numS(2:4); %date
             chemestry_data(s,i)=PANGAEA_numS(i); %#ok
             volume(s,:) = PANGAEA_numS(10)/ 140^2; %#ok
             
             if graph_corr==1
                 % COLORS
                 Color_f = color_data(numS(s),type,filter_infos_num,filter_infos_txt,PANGAEA_num);
-                
-                % PLOT
+            end
+            % PLOT
+            
+            if graph_corr==1
                 hold on
                 subplot(dim(1),dim(2),t)
                 plot(x(s),y(s),'.','color',Color_f)
-                plot(x(s),y(s),'o','color',Color_f,'linewidth',1.5)
-                % ERROR BARS
-                dy = sqrt(y(s)/volume); if y(s)-dy<0, y_d=0; else y_d=y(s)-dy; end
-                plot([x(s) x(s)],[y_d y(s)+dy],'color',Color_f)
+                plot(x(s),y(s),'o','color',Color_f,'linewidth',2)
+            end
+            % ERROR BARS
+            dy(s) = sqrt(y(s)/volume(s)); if y(s)-dy(s)<0, y_d=0; else y_d=y(s)-dy(s); end
+            
+            if graph_corr==1
+                plot([x(s) x(s)],[y_d y(s)+dy(s)],'color',Color_f)
                 % GRAPHIC INFORMATION
-                %title(sprintf('Temperature %d',temp(t)))
-                %ylabel('K_T')
+                title(sprintf('Temperature %d',temp(t)))
+                ylabel('K_T')
                 xlabel(PANGAEA_text(1,i))
                 %ylim_U = [10 50 100 150];
                 %ylim([0 ylim_U(t)])
@@ -106,14 +110,14 @@ if plot_timeseries==1,
         figure
         hold on
         subplot(2,1,2)
-        semilogy(timeseries(:,1),timeseries(:,2:5),'-')
-        dy = sqrt(timeseries(:,2:5)./volume); if y(s)-dy<0, y_d=0; else y_d=y(s)-dy; end
-        %semilogy([x(s) x(s)],[y_d y(s)+dy],'color',Color_f)
+        plot(timeseries(:,1),timeseries(:,2:5),'-')
+        %dy = sqrt(timeseries(:,2:5)./volume); if y(s)-dy<0, y_d=0; else y_d=y(s)-dy; end
         
         datetick('x','mmmyyyy','keepticks')
         subplot(2,1,1)
-        plot(timeseries(:,1),chemestry_data(:,p),'.')
+        plot(timeseries(:,1),chemestry_data(:,p),'bd')
         datetick('x','mmmyyyy','keepticks')
         title(PANGAEA_text(1,p))
+        hold off
     end
 end
